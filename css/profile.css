@@ -24,20 +24,18 @@ body {
     text-align: center;
     margin: 20px;
 }
-#responseModalLabel,
-#responseMessage {
-    color: black;
+
+
+#responseModal .modal-content {
+    background-color: gray;
 }
-.custom-h1 {
-    color: black;
-    font-weight: bold;
-}
+
+
 
 
 .logo-container img {
     max-width: 40%;
     height: auto;
     transform: translateY(-40%) scale(1.5);
-
     border-radius: 75%; /* Set the border radius greater than 50% */
 }

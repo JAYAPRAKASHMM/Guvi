@@ -10,6 +10,7 @@ $(document).ready(function () {
               username: username,
               password: password,
               email: email
+              
           },
           dataType: "json",
           success: function (response) {
@@ -33,7 +34,6 @@ $(document).ready(function () {
         }
       });
   });
-
   function saveUserStatusMySQL(username, status) {
       $.ajax({
           type: "POST",

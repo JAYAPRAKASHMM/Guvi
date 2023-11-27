@@ -1,59 +1,106 @@
-$(document).ready(function () {
-    $("#submitBtn").click(function () {
-        submitFormData();
-    });
+$(document).ready(function() {
     function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
     }
+
     var username = getUrlParameter('username');
-    $('#username').text(username);
-    $.ajax({
-        type: "GET",
-        url: "php/profile.php",
-        data: {
-            username: username
-        },
-        dataType: "json",
-        success: function (response) {
-            if (response.status === "success") {
-                $('#email').text(response.user.email);
-            } else {
-                alert("User not found");
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error("AJAX Error: " + status + "\n" + error);
-            alert("Error in AJAX request");
-        }
+    $("#username").text("@"+username);
+    var user = {
+        username: username,
+        email: "",
+        dob: "",
+        gender: "",
+        institution: "",
+        yearOfPassing: "",
+        phoneNumber: ""
+    };
+ 
+    function handleSaveButtonClick(button) {
+        var field = button.closest('.form-group').find('.form-control').attr('id');
+        var value = $("#" + field).val();
+    if (value !== "") {
+        user[field] = value;
+        updateMdb(username,field,value);
+    }
+    }
+
+    $('.btn-primary').on('click', function() {
+        handleSaveButtonClick($(this));
     });
-    function submitFormData() {
-        // Serialize form data into JSON format
-        var formData = {
-            username: getUrlParameter('username'),
-            dob: $("#dob").val(),
-            gender: $("#gender").val(),
-            institution: $("#institution").val(),
-            yearOfPassing: $("#yearOfPassing").val(),
-            phoneNumber: $("#phoneNumber").val()
+
+    $("#logoutButton").click(function() {
+        saveUserStatusMySQL(username,"Logged out")
+        window.location.href = "index.html";
+    });
+
+    $("#downloadBtn").click(function() {
+        const userDataJson = JSON.stringify(user);
+        const blob = new Blob([userDataJson], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'userData.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+
+    $("#finishButton").click(function() {
+        $("#responseModal").modal('show');
+    });
+    function updateMdb(username, field, value) {
+
+        var apiUrl = 'php/profile.php';
+            var data = {
+            username: username,
+            field: field,
+            value: value
         };
-            $.ajax({
-            type: "POST",
-            url: "assets/dataStore.php",
-            data: JSON.stringify(formData),
-            contentType: "application/json",
-            success: function (response) {
-                console.log(response);
-                $("#responseMessage").text(response);
-                $("#responseModal").modal('show');
+    
+        $.ajax({
+            type: 'POST',
+            url: apiUrl,
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function(response) {
+                console.log('Update successful:', response);
             },
-            error: function (er) {
-                $("#responseMessage").text("Error in saving user data");
-                $("#responseModal").modal('show');
+            error: function(error) {
+                console.error('Error updating MongoDB:', error);
             }
         });
     }
-        $('#responseModal').on('hidden.bs.modal', function () {
-        $("#responseMessage").text("");
-    });
+    function saveUserStatusMySQL(username, status) {
+        $.ajax({
+            type: "POST",
+            url: "assets/mysql_connection.php",
+            data: {
+                username: username,
+                status: status,
+                time: getCurrentTime(),
+                date: getCurrentDate()
+            },
+            success: function (response) {
+                console.log(response);
+            },
+            error: function () {
+                console.log("Error in saving user status");
+            }
+        });
+    }
+    function getCurrentTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        return hours + ":" + minutes + ":" + seconds;
+    }
+    function getCurrentDate() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = now.getMonth() + 1;
+        var day = now.getDate();
+        return year + "-" + month + "-" + day;
+    }
+  
 });

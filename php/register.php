@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'username' => $username,
                 'password' => $password,
                 'email' => $email,
+                'dob' => '',
+                'gender' => '',
+                'institution' => '',
+                'yearOfPassing' => '',
+                'phoneNumber' => ''
             ];
             $result = $mongoDB->users->insertOne($userDocument);
             if ($result->getInsertedCount() > 0) {

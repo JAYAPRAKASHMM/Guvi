@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
-$mongoUri = 'mongodb://localhost:27017/my_application_database';
+$mongoUri = 'mongodb://roundhouse.proxy.rlwy.net:23989/my_application_database';
 try {
-    $mongoClient = new MongoDB\Client($mongoUri);
+    $mongoClient = new MongoDB\Client($mongoUri,array("username" => "mongo", "password" => "f3Ad41c6EE2bfB5BB2BF1Aad3HAbBbFf"));
     $mongoDB = $mongoClient->selectDatabase('my_application_database');
     $users=$mongoDB->users;
 

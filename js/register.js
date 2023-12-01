@@ -1,4 +1,7 @@
 $(document).ready(function () {
+$('#profileButton').on('click', function() {
+        window.location.href = 'profile.html?username=test';
+      });
   $("#registerBtn").click(function () {
       var username = $("#username").val();
       var password = $("#password").val();

@@ -1,36 +1,36 @@
 <?php
-include_once('../mongo_connection.php');
-header('Content-Type: application/json'); 
+$mysqlHost = 'roundhouse.proxy.rlwy.net';
+$mysqlUsername = 'root';
+$mysqlPassword = 'ac32d242-cAahg2fggE6ghaD35Ce6eAc';
+$mysqlDatabase = 'railway';
+$mysqli = new mysqli($mysqlHost, $mysqlUsername, $mysqlPassword, $mysqlDatabase, 27340);
+if ($mysqli->connect_error) {
+    die("MySQL Connection failed: " . $mysqli->connect_error);
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $email = $_POST['email'];
-    try {
-        $existingUser = $mongoDB->users->findOne(['username' => $username]);
-        if ($existingUser) {
-            echo json_encode(['status' => 'error', 'message' => 'Username already exists']);
-        } else{
-            $userDocument = [
-                'username' => $username,
-                'password' => $password,
-                'email' => $email,
-                'dob' => '',
-                'gender' => '',
-                'institution' => '',
-                'yearOfPassing' => '',
-                'phoneNumber' => ''
-            ];
-            $result = $mongoDB->users->insertOne($userDocument);
-            if ($result->getInsertedCount() > 0) {
-                echo json_encode(['status' => 'success', 'message' => 'Registration successful']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Registration failed']);
-            }
+    $password = $_POST['password'];
+    $checkStmt = $mysqli->prepare("SELECT COUNT(*) FROM user WHERE username = ?");
+    $checkStmt->bind_param("s", $username);
+    $checkStmt->execute();
+    $checkStmt->bind_result($count);
+    $checkStmt->fetch();
+    $checkStmt->close();
+    if ($count > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Username already exists']);
+    } else {
+        $insertStmt = $mysqli->prepare("INSERT INTO user (username, email, password) VALUES (?, ?, ?)");
+        $insertStmt->bind_param("sss", $username, $email, $password);
+        if ($insertStmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Registration successful']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Registration failed']);
         }
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => 'An error occurred']);
+        $insertStmt->close();
     }
-} else{
+} else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
 }
+$mysqli->close();
 ?>

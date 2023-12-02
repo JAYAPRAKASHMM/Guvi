@@ -26,9 +26,6 @@ $(document).ready(function () {
             }
         });
     });
-    $('#profileButton').on('click', function() {
-        window.location.href = './profile.html?username=test';
-      });
     function saveUserStatusInMySQL(username, status) {
         $.ajax({
             type: "POST",

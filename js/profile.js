@@ -57,7 +57,7 @@ $(document).ready(function() {
     function updateMdb(username, field, value) {
 
         var apiUrl = 'php/profile.php';
-            var data = {
+        var data = {
             username: username,
             field: field,
             value: value
@@ -69,6 +69,7 @@ $(document).ready(function() {
             data: JSON.stringify(data),
             contentType: 'application/json',
             success: function(response) {
+                alert("Update successful in MongoDb");
                 console.log('Update successful:', response);
             },
             error: function(error) {

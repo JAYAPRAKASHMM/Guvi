@@ -33,6 +33,7 @@ $(document).ready(function() {
         $('.btn-primary').each(function(index, element) {
             handleSaveButtonClick($(element));
         });
+        alert("Update successful in MongoDb");
     });
 
     $("#logoutButton").click(function() {
@@ -69,7 +70,6 @@ $(document).ready(function() {
             data: JSON.stringify(data),
             contentType: 'application/json',
             success: function(response) {
-                alert("Update successful in MongoDb");
                 console.log('Update successful:', response);
             },
             error: function(error) {
